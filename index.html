@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="keywords" content="deepfake, video, face, swap, dubbing, ai, machine learning, deep learning">
+
+    <title>FaceDub - Face Swapping for Videos & Photos</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <link href="assets/css/core.min.css" rel="stylesheet">
+    <link href="assets/css/thesaas.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/countupjs/1.8.5/countUp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
+
+    <script>
+  !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t,e){var n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src="https://cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(n,a);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.1.0";
+  analytics.load("XnRugGa3oqbyH1ybWtjDxDeRr85xiXng");
+  analytics.page();
+  }}();
+</script>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+    <link rel="icon" href="assets/img/favicon.png">
+
+    <style>
+    .carousel-caption
+    {
+        padding-top:50px;
+        padding-bottom: 10px;
+        bottom: 0px;
+    }
+
+    @media only screen and (max-width: 768px)
+    {
+      .carousel-caption
+      {
+        font-size: small;
+      }
+    }
+
+    section
+    {
+      padding-top: 25px!important;
+    }
+
+    @media only screen and (min-width: 768px) {
+      header {
+        height: 240px;
+        line-height: 240px;
+      }
+      header h1 {
+        font-size: 32px;
+        font-size: 2rem;
+      }
+    }
+
+    .carousel-caption h5
+    {
+      color: black;
+    }
+
+    .cd-image-container {
+      position: relative;
+      width: 90%;
+      max-width: 768px;
+      margin: 0em auto;
+    }
+    .cd-image-container img {
+      display: block;
+    }
+
+    .cd-image-label {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      color: #ffffff;
+      padding: 1em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      opacity: 0;
+      -webkit-transform: translateY(20px);
+      -moz-transform: translateY(20px);
+      -ms-transform: translateY(20px);
+      -o-transform: translateY(20px);
+      transform: translateY(20px);
+      -webkit-transition: -webkit-transform 0.3s 0.7s, opacity 0.3s 0.7s;
+      -moz-transition: -moz-transform 0.3s 0.7s, opacity 0.3s 0.7s;
+      transition: transform 0.3s 0.7s, opacity 0.3s 0.7s;
+    }
+    .cd-image-label.is-hidden {
+      visibility: hidden;
+    }
+    .is-visible .cd-image-label {
+      opacity: 1;
+      -webkit-transform: translateY(0);
+      -moz-transform: translateY(0);
+      -ms-transform: translateY(0);
+      -o-transform: translateY(0);
+      transform: translateY(0);
+    }
+
+    .cd-resize-img {
+      position: absolute;
+      border-right: 1px solid black;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      overflow: hidden;
+      /* Force Hardware Acceleration in WebKit */
+      -webkit-transform: translateZ(0);
+      -moz-transform: translateZ(0);
+      -ms-transform: translateZ(0);
+      -o-transform: translateZ(0);
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    .cd-resize-img img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: block;
+      height: 100%;
+      width: auto;
+      max-width: none;
+    }
+    .cd-resize-img .cd-image-label {
+      right: auto;
+      left: 0;
+    }
+    .is-visible .cd-resize-img {
+      width: 50%;
+      /* bounce in animation of the modified image */
+      -webkit-animation: cd-bounce-in 0.7s;
+      -moz-animation: cd-bounce-in 0.7s;
+      animation: cd-bounce-in 0.7s;
+    }
+
+    @-webkit-keyframes cd-bounce-in {
+      0% {
+        width: 0;
+      }
+      60% {
+        width: 55%;
+      }
+      100% {
+        width: 50%;
+      }
+    }
+    @-moz-keyframes cd-bounce-in {
+      0% {
+        width: 0;
+      }
+      60% {
+        width: 55%;
+      }
+      100% {
+        width: 50%;
+      }
+    }
+    @keyframes cd-bounce-in {
+      0% {
+        width: 0;
+      }
+      60% {
+        width: 55%;
+      }
+      100% {
+        width: 50%;
+      }
+    }
+    .cd-handle {
+      position: absolute;
+      height: 44px;
+      width: 44px;
+      /* center the element */
+      left: 50%;
+      top: 50%;
+      margin-left: -22px;
+      margin-top: -22px;
+      border-radius: 50%;
+      background: #dc717d url("assets/img/cd-arrows.svg") no-repeat center center;
+      cursor: move;
+      box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      opacity: 0;
+      -webkit-transform: translate3d(0, 0, 0) scale(0);
+      -moz-transform: translate3d(0, 0, 0) scale(0);
+      -ms-transform: translate3d(0, 0, 0) scale(0);
+      -o-transform: translate3d(0, 0, 0) scale(0);
+      transform: translate3d(0, 0, 0) scale(0);
+    }
+    .cd-handle.draggable {
+      /* change background color when element is active */
+      background-color: #445b7c;
+    }
+    .is-visible .cd-handle {
+      opacity: 1;
+      -webkit-transform: translate3d(0, 0, 0) scale(1);
+      -moz-transform: translate3d(0, 0, 0) scale(1);
+      -ms-transform: translate3d(0, 0, 0) scale(1);
+      -o-transform: translate3d(0, 0, 0) scale(1);
+      transform: translate3d(0, 0, 0) scale(1);
+      -webkit-transition: -webkit-transform 0.3s 0.7s, opacity 0s 0.7s;
+      -moz-transition: -moz-transform 0.3s 0.7s, opacity 0s 0.7s;
+      transition: transform 0.3s 0.7s, opacity 0s 0.7s;
+    }
+
+    #message
+    {
+      border-radius: 20px;
+      border: 2px solid gray;
+      padding: 5px;
+      width: 45%;
+      max-height: 80%;
+      position: absolute;
+      top: 30%;
+      right: 12%;
+      color: black;
+      background-color: white;
+      box-shadow: 5px 5px 5px;
+    }
+    #message_integrations
+    {
+      border-radius: 20px;
+      border: 2px solid gray;
+      padding: 5px;
+      width: 45%;
+      max-height: 90%;
+      position: absolute;
+      top: 40%;
+      right: 10%;
+      color: black;
+      background-color: white;
+      display: none;
+      box-shadow: 5px 5px 5px;
+    }
+
+    .tiny_logo
+    {
+      height: 25px;
+      margin-right: 5px;
+    }
+
+    .top_carousel
+    {
+      float: right;
+      border-radius: 15px;
+      height: 500px;
+      padding: 10px;
+    }
+
+    #analytics
+    {
+      border-radius: 20px;
+    }
+
+    @media only screen and (max-width: 767px)
+    {
+      #top_video
+      {
+        width: 100%;
+      }
+    }
+
+    #top_video
+    {
+      border-radius: 15px;
+    }
+
+    .integration_icon
+    {
+      margin: 10px;
+    }
+
+    .cta
+    {
+      /*background-color: #0facf3;
+      border-color: #0facf3;*/
+      border-radius: 10rem;
+      font-family: 'Montserrat', sans-serif;
+      text-transform: none;
+    }
+
+    #demo_video
+    {
+      border-radius: 10px;
+    }
+
+    #solution
+    {
+      background: linear-gradient(144deg,rgba(46,100,255,.22) -110%,rgba(13,94,255,0) 110%);
+    }
+
+    #header
+    {
+      padding-top: 20px;
+      background: linear-gradient(to bottom, #243949 0%, #517fa4 100%);
+      padding-bottom: 30px;
+    }
+
+    #demo_link, #trial_link
+    {
+      margin-bottom: 20px;
+    }
+
+    #stats
+    {
+      text-align: center;
+    }
+
+    .blockquote
+    {
+      font-size: 1.5rem;
+    }
+
+    #google_logo
+    {
+      width: 10%;
+    }
+
+    @media only screen and (max-width: 768px)
+    {
+      #google_logo
+      {
+        width: 20%;
+      }
+    }
+
+    .dotted
+    {
+      border-bottom: 1px dotted #000;
+      text-decoration: none;
+    }
+
+    #typing
+    {
+      min-height: 100px;
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    #logos
+    {
+      width: 70%;
+    }
+
+    #contact_form
+    {
+      display: none;
+    }
+
+    #spinner
+    {
+      display: none;
+    }
+
+    #submitted_message
+    {
+      color: white;
+    }
+
+    #trial_link
+    {
+      background-color: transparent;
+      border-color: black;
+    }
+    #trial_link:hover
+    {
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+
+    #logos_top
+    {
+      height: 50px;
+    }
+
+    #how_it_works_video_1
+    {
+      height: 540px;
+      width: 537px;
+    }
+    </style>
+
+    <script>
+    jQuery(document).ready(function($)
+    {
+      $('#stats_numbers').one('inview', function(event, isInView) {
+        if (isInView)
+        {
+          // element is now visible in the viewport
+          var options = {
+            useEasing : true,
+            useGrouping : true,
+            separator : ',',
+            decimal : '.',
+            prefix: '',
+            duration: 2
+          };
+          var demo = new CountUp("videos_created", 0, 23407, 0, 2, options);
+          demo.start();
+
+          var demo = new CountUp("hours_audio", 0, 302597, 0, 2, options);
+          demo.start();
+
+          var demo = new CountUp("video_views", 0, 12373121, 0, 2, options);
+          demo.start();
+        }
+        else
+        {
+          // element has gone out of viewport
+        }
+      });
+
+      $('#hack_carousel').one('inview', function(event, isInView)
+      {
+        if (isInView)
+        {
+          $('#hack_carousel').carousel();//start it
+        }
+      });
+
+      //40, 100, 999
+      //week, month, quarter
+      //gasoline, software, flights & hotels
+      //ca, usa, anywhere
+
+
+      //var typed = new Typed("#category", category_options);
+      //var typed = new Typed("#location", location_options);
+
+      /*function gtag_report_conversion(url)
+      {
+        var callback = function () {
+          if (typeof(url) != 'undefined') {
+            window.location = url;
+          }
+        };
+        gtag('event', 'conversion', {
+            'send_to': 'AW-955637341/HwFlCIXd95kBEN2818cD',
+            'event_callback': callback
+        });
+        return false;
+      }*/
+
+      first_sentence();
+
+      $("#demo_link").click(function()
+      {
+        $("#contact_form").show();
+        //href="https://www.breachblocker.app/request_demo.html"
+      });
+      $("#trial_link").click(function()
+      {
+        $("#contact_form").show();
+        //href="https://www.breachblocker.app/request_demo.html"
+      });
+      $("#contact_submit").click(function()
+      {
+        $("#spinner").show();
+        //gtag_report_conversion();
+        $.ajax({
+      			type: "POST",
+      			url: "https://n26rn51g0a.execute-api.us-west-2.amazonaws.com/dev/auth/contact_form",
+      			contentType: 'json',
+      			dataType: 'json',
+      			data: JSON.stringify({
+              email_address: $("#email_address").val(),
+      				name: $("#name").val(),
+              source: 'summation'
+            })
+    		  }).done(function(msg)
+    		  {
+            $("#spinner").hide();
+      			$("#submitted_message").html("Thanks!  We'll be in touch shortly!");
+          });
+      });
+    });
+
+    var typing_speed = 30;
+    function first_sentence()
+    {
+      /*$("#typing").html("<span id='first_message'></span>");
+      var options = {
+        strings: ['"Hey Justine, hope you enjoyed shopping on our site last week."','"I noticed that you put a few items in your cart, but haven’t checked out yet."','"Just wanted to let you know that I’m sending you a 15% off coupon to help with that order."','"We’re also starting our summer sale on clothing & beauty brands next week, so look out for that!"'],
+        typeSpeed: typing_speed,
+        onComplete: (self) => { }
+      }
+      var typed = new Typed("#first_message", options);*/
+    }
+    </script>
+  </head>
+
+  <body>
+
+    <!-- Main container -->
+    <main class="main-content">
+
+      <section class="section overflow-hidden" id="header">
+
+        <!-- Topbar -->
+        <nav class="topbar topbar-inverse topbar-expand-sm">
+          <div class="container">
+
+            <div class="topbar-left">
+              <button class="topbar-toggler">&#9776;</button>
+            </div>
+
+            <div class="topbar-right">
+              <ul class="topbar-nav nav">
+                <li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing/">Pricing</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing/index.html#faq">FAQ</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <!-- END Topbar -->
+
+      <div class="container" style="padding-top: 50px;">
+
+        <div class="row">
+          <div class="col-12 col-sm-6">
+            <h1 style="font-family: 'Montserrat', sans-serif; color: white;">Video & Photo Face Swapping</h1>
+            <br/>
+            <h4 style="font-family: 'Montserrat', sans-serif; color: white;">AI <span class="mark-border">replaces faces in videos</span> & photos</h4>
+            <br/>
+            <!--<a class="btn btn-lg btn-round w-250 btn-dark mr-16 cta" href="https://app.breachblocker.app" style="margin-top: 10px; line-height: normal;">Get Secure</a>-->
+            <!--<a class="btn btn-lg btn-round w-250 btn-success mr-16 cta" id="demo_link" href="https://calendly.com/josh_breachblocker/intro_chat" style="margin-top: 10px; line-height: normal;">Schedule a Demo</a>-->
+            <!--<a class="btn btn-lg btn-round w-250 mr-16 cta" id="trial_link" style="margin-top: 10px; line-height: normal;">Create your 1<sup>st</sup> Video</a>-->
+
+            <a class="btn btn-lg btn-round w-250 btn-success mr-16 cta" href="https://app.facedub.app" style="margin-top: 10px; line-height: normal;">Get Started, Free</a>
+
+            <div id='contact_form' class='form-group'>
+              <input type='text' class="form-control" id='name' placeholder='Your Name'>
+              <br/>
+              <input tppe='text' class="form-control" id='email_address' placeholder='Email Address'>
+              <br/>
+              <button class="btn btn-round btn-success" id='contact_submit'>Submit</button>
+              <br/>
+              <img id='spinner' src='assets/img/spinner.svg'>
+              <div id='submitted_message'></div>
+            </div>
+
+          </div>
+
+          <div class="col-sm-6" style="text-align: right;">
+            <video id='top_video' controls playsinline autoplay muted loop alt="..." data-aos="fade-left" data-aos-delay="200">
+              <source src="assets/img/swap_demo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>
+            <div id='typing'></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      <section class="section pb-0 overflow-hidden" id="stats">
+        <div class="container">
+          <!--<blockquote class="blockquote text-center">
+            <p class="mb-0">automatically reset[ing] the password... exposed in a third party data breach... reduces the risk of your account getting hacked by a <b>factor of 10</b></p>
+            <footer class="blockquote-footer"><a href='https://www.blog.google/technology/safety-security/google-password-checkup-cross-account-protection/'>Kurt Thomas & Angelika Moscicki</a>,
+              <br/><cite title="Source Title"><img src='assets/img/google_logo.png' id='google_logo'></cite></footer>
+          </blockquote>-->
+
+          <div class="row" id="stats_numbers">
+            <div class="col-sm">
+              <h4 style="color: #2478FF" id="videos_created"></h4>
+              <br>
+              <h5>videos created</h5>
+            </div>
+
+            <div class="col-sm">
+              <h4 style="color: #2478FF" id="hours_audio"></h4><br>
+              <h5>photos created</h5>
+            </div>
+
+            <div class="col-sm">
+              <h4 style="color: #2478FF" id="video_views"></h4><br>
+              <h5>video views</h5>
+            </div>
+
+          </div>
+
+          <div id='quote'>
+          </div>
+
+          <br><br>
+
+      </section>
+
+      <section class="section pb-0 overflow-hidden" id="problem">
+
+        <div class="container">
+          <div class="row align-items-center">
+
+            <div class="col-12 col-md-6" style="margin-bottom: -40px;">
+              <div id="hack_carousel" data-ride="carousel" data-interval="2000" data-aos="fade-left" data-aos-delay="200">
+
+              <video id='top_video' controls playsinline autoplay muted loop alt="..." data-aos="fade-left" data-aos-delay="200">
+                <source src="assets/img/chinese_pm.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+              </video>
+
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6 order-first order-md-last" style="padding-top: 45px;">
+              <h2>Swap any Face</h2>
+              <p class="lead">
+                - Redo your favorite movies with the actor of your choice<br/>
+                - Replace a stunt double's footage with the actor's face<br/>
+                - Bring to life deceased actors<br/>
+              </p>
+              <br>
+
+              <div class="flexbox gap-items-4">
+                <div>
+                  <i class="fas fa-edit"></i>
+                </div>
+
+              <div class="flexbox gap-items-4">
+                <div>
+                  <i class="far fa-grin-alt"></i>
+                </div>
+
+                <div>
+                  <h5>Upload or Link to your Video</h5>
+                  <p>Or link to an existing one one Youtube.</p>
+                </div>
+              </div>
+
+              <div class="flexbox gap-items-4">
+                <div>
+                  <i class="far fa-envelope"></i>
+                </div>
+
+                <div>
+                  <h5>Select a Face to Replace</h5>
+                  <p>Select from one of our templates, or upload your own photo</p>
+                </div>
+              </div>
+
+              <div class="flexbox gap-items-4">
+                <div>
+                  <i class="fas fa-video"></i>
+                </div>
+
+                <div>
+                  <h5>Our AI replaces their face in the video/photo seamlessly</h5>
+                  <p></p>
+                </div>
+              </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!--<section class="section pb-0 overflow-hidden" id="solution">
+
+        <div class="container">
+          <div class="row align-items-center">
+
+            <div class="col-12 col-md-6" style="padding-top: 45px;">
+              <h2>Grow Movie and TV audiences Internationally</h2>
+              <p class="lead">
+              Without the poor, jarring viewing experience of audio-only dubbing.
+              </p>
+              <br>
+
+              <div class="flexbox gap-items-4">
+                <div>
+                  <i class="fas fa-comment-dollar"></i>
+                </div>
+
+                <div>
+                  <h5>Select your Languages</h5>
+                  <p>Our actors will re-do the footage in the language of your choice, while matching the facial expressions of the actor.</p>
+                </div>
+              </div>
+
+              <div class="flexbox gap-items-4">
+                <div>
+                  <i class="fas fa-sync"></i>
+                </div>
+
+                <div>
+                  <h5>Our AI perfectly lip-syncs the actor's face to the translated audio</h5>
+                  <p>Your customers can continue to receive videos from the same digital persona for years, helping to build up brand loyalty and an established relationship - unlike using videos of employees or actors who may leave after a year.</p>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="col-12 col-md-6">
+
+            <div id="hack_carousel" class="carousel slide carousel-fade" data-interval="2000" data-aos="fade-left" data-aos-delay="200">
+              <video id='how_it_works_video_1' class="video-fluid" autoplay loop muted>
+                <source src="assets/img/face_mesh2.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+              </video>
+            </div>
+      </section>-->
+
+      <!--<section class="section pb-0 overflow-hidden" id="integrations">
+        <div class="container">
+          <div class="row align-items-center">
+
+            <div class="col-12 col-md-6">
+              <div style="margin: 20px auto; width: 100%; text-align: center;" alt="..." data-aos="fade-left" data-aos-delay="200">
+                <i class="fab fa-salesforce fa-4x integration_icon"></i>
+                <i class="fab fa-hubspot fa-4x integration_icon"></i>
+                <i class="fab fa-mailchimp fa-4x integration_icon"></i>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <h2>Seamless Integrations</h2>
+              <p class="lead">Create and share videos on autopilot, with integrations into your existing workflows and tools via our open API, including Google Sheets, Youtube, and hundreds more via Zapier.</p>
+              <br>
+            </div>
+
+          </div>
+        </div>
+      </section>-->
+
+    </main>
+    <!-- END Main container -->
+
+    <!-- Footer -->
+    <footer class="site-footer py-90" style="background-image:url('assets/img/low_poly_background_small.jpg'); color: white;">
+      <div class="container">
+
+        <div class="row gap-y">
+          <div class="col-12 col-md-4 col-lg-4">
+            <h6 class="heading-alt text-uppercase fs-14 mb-3">Product</h6>
+            <div class="nav flex-column">
+              <a class="nav-link" href="https://www.facedub.app/pricing/index.html#faq">FAQ</a>
+              <a class="nav-link" href="https://www.facedub.app/pricing/">Pricing</a>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4 col-lg-4">
+            <h6 class="heading-alt text-uppercase fs-14 mb-3">Resources</h6>
+            <div class="nav flex-column">
+              <a class="nav-link" href="https://medium.com/@facedub">Blog</a>
+            </div>
+            <div class="social text-center">
+              <a class="social-twitter" href="https://twitter.com/facedub"><i class="fa fa-twitter"></i></a>
+              <!--<a class="social-youtube" href="#"><i class="fa fa-youtube"></i></a>-->
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4 col-lg-4">
+            <h6 class="heading-alt text-uppercase fs-14 mb-3">Company</h6>
+            <div class="nav flex-column">
+              <a class="nav-link" href="https://www.facedub.com/contact">Contact Us</a>
+              <a class="nav-link" href="https://www.facedub.com/privacy-policy">Privacy</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </footer>
+    <!-- END Footer -->
+
+    <!-- Scripts -->
+    <script src="assets/js/core.min.js"></script>
+    <script src="assets/js/thesaas.min.js"></script>
+    <script src="assets/js/script.js"></script>
+  </body>
+</html>
