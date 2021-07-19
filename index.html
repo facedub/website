@@ -1,579 +1,473 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="keywords" content="deepfake, video, face, swap, dubbing, ai, machine learning, deep learning">
-
-    <title>FaceDub - Face Swapping for Videos & Photos</title>
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-
-    <link href="assets/css/core.min.css" rel="stylesheet">
-    <link href="assets/css/thesaas.min.css" rel="stylesheet">
-    <link href="assets/css/style.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/countupjs/1.8.5/countUp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
-
-    <script>
-  !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t,e){var n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src="https://cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(n,a);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.1.0";
-  analytics.load("XnRugGa3oqbyH1ybWtjDxDeRr85xiXng");
-  analytics.page();
-  }}();
-</script>
-
-    <!-- Favicons -->
-    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-    <link rel="icon" href="assets/img/favicon.png">
-
-    <style>
-    .carousel-caption
-    {
-        padding-top:50px;
-        padding-bottom: 10px;
-        bottom: 0px;
-    }
-
-    @media only screen and (max-width: 768px)
-    {
-      .carousel-caption
-      {
-        font-size: small;
-      }
-    }
-
-    section
-    {
-      padding-top: 25px!important;
-    }
-
-    @media only screen and (min-width: 768px) {
-      header {
-        height: 240px;
-        line-height: 240px;
-      }
-      header h1 {
-        font-size: 32px;
-        font-size: 2rem;
-      }
-    }
-
-    .carousel-caption h5
-    {
-      color: black;
-    }
-
-    .cd-image-container {
-      position: relative;
-      width: 90%;
-      max-width: 768px;
-      margin: 0em auto;
-    }
-    .cd-image-container img {
-      display: block;
-    }
-
-    .cd-image-label {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      color: #ffffff;
-      padding: 1em;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      opacity: 0;
-      -webkit-transform: translateY(20px);
-      -moz-transform: translateY(20px);
-      -ms-transform: translateY(20px);
-      -o-transform: translateY(20px);
-      transform: translateY(20px);
-      -webkit-transition: -webkit-transform 0.3s 0.7s, opacity 0.3s 0.7s;
-      -moz-transition: -moz-transform 0.3s 0.7s, opacity 0.3s 0.7s;
-      transition: transform 0.3s 0.7s, opacity 0.3s 0.7s;
-    }
-    .cd-image-label.is-hidden {
-      visibility: hidden;
-    }
-    .is-visible .cd-image-label {
-      opacity: 1;
-      -webkit-transform: translateY(0);
-      -moz-transform: translateY(0);
-      -ms-transform: translateY(0);
-      -o-transform: translateY(0);
-      transform: translateY(0);
-    }
-
-    .cd-resize-img {
-      position: absolute;
-      border-right: 1px solid black;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 100%;
-      overflow: hidden;
-      /* Force Hardware Acceleration in WebKit */
-      -webkit-transform: translateZ(0);
-      -moz-transform: translateZ(0);
-      -ms-transform: translateZ(0);
-      -o-transform: translateZ(0);
-      transform: translateZ(0);
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-    }
-    .cd-resize-img img {
-      position: absolute;
-      left: 0;
-      top: 0;
-      display: block;
-      height: 100%;
-      width: auto;
-      max-width: none;
-    }
-    .cd-resize-img .cd-image-label {
-      right: auto;
-      left: 0;
-    }
-    .is-visible .cd-resize-img {
-      width: 50%;
-      /* bounce in animation of the modified image */
-      -webkit-animation: cd-bounce-in 0.7s;
-      -moz-animation: cd-bounce-in 0.7s;
-      animation: cd-bounce-in 0.7s;
-    }
-
-    @-webkit-keyframes cd-bounce-in {
-      0% {
-        width: 0;
-      }
-      60% {
-        width: 55%;
-      }
-      100% {
-        width: 50%;
-      }
-    }
-    @-moz-keyframes cd-bounce-in {
-      0% {
-        width: 0;
-      }
-      60% {
-        width: 55%;
-      }
-      100% {
-        width: 50%;
-      }
-    }
-    @keyframes cd-bounce-in {
-      0% {
-        width: 0;
-      }
-      60% {
-        width: 55%;
-      }
-      100% {
-        width: 50%;
-      }
-    }
-    .cd-handle {
-      position: absolute;
-      height: 44px;
-      width: 44px;
-      /* center the element */
-      left: 50%;
-      top: 50%;
-      margin-left: -22px;
-      margin-top: -22px;
-      border-radius: 50%;
-      background: #dc717d url("assets/img/cd-arrows.svg") no-repeat center center;
-      cursor: move;
-      box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      opacity: 0;
-      -webkit-transform: translate3d(0, 0, 0) scale(0);
-      -moz-transform: translate3d(0, 0, 0) scale(0);
-      -ms-transform: translate3d(0, 0, 0) scale(0);
-      -o-transform: translate3d(0, 0, 0) scale(0);
-      transform: translate3d(0, 0, 0) scale(0);
-    }
-    .cd-handle.draggable {
-      /* change background color when element is active */
-      background-color: #445b7c;
-    }
-    .is-visible .cd-handle {
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0) scale(1);
-      -moz-transform: translate3d(0, 0, 0) scale(1);
-      -ms-transform: translate3d(0, 0, 0) scale(1);
-      -o-transform: translate3d(0, 0, 0) scale(1);
-      transform: translate3d(0, 0, 0) scale(1);
-      -webkit-transition: -webkit-transform 0.3s 0.7s, opacity 0s 0.7s;
-      -moz-transition: -moz-transform 0.3s 0.7s, opacity 0s 0.7s;
-      transition: transform 0.3s 0.7s, opacity 0s 0.7s;
-    }
-
-    #message
-    {
-      border-radius: 20px;
-      border: 2px solid gray;
-      padding: 5px;
-      width: 45%;
-      max-height: 80%;
-      position: absolute;
-      top: 30%;
-      right: 12%;
-      color: black;
-      background-color: white;
-      box-shadow: 5px 5px 5px;
-    }
-    #message_integrations
-    {
-      border-radius: 20px;
-      border: 2px solid gray;
-      padding: 5px;
-      width: 45%;
-      max-height: 90%;
-      position: absolute;
-      top: 40%;
-      right: 10%;
-      color: black;
-      background-color: white;
-      display: none;
-      box-shadow: 5px 5px 5px;
-    }
-
-    .tiny_logo
-    {
-      height: 25px;
-      margin-right: 5px;
-    }
-
-    .top_carousel
-    {
-      float: right;
-      border-radius: 15px;
-      height: 500px;
-      padding: 10px;
-    }
-
-    #analytics
-    {
-      border-radius: 20px;
-    }
-
-    @media only screen and (max-width: 767px)
-    {
-      #top_video
-      {
-        width: 100%;
-      }
-    }
-
-    #top_video
-    {
-      border-radius: 15px;
-    }
-
-    .integration_icon
-    {
-      margin: 10px;
-    }
-
-    .cta
-    {
-      /*background-color: #0facf3;
-      border-color: #0facf3;*/
-      border-radius: 10rem;
-      font-family: 'Montserrat', sans-serif;
-      text-transform: none;
-    }
-
-    #demo_video
-    {
-      border-radius: 10px;
-    }
-
-    #solution
-    {
-      background: linear-gradient(144deg,rgba(46,100,255,.22) -110%,rgba(13,94,255,0) 110%);
-    }
-
-    #header
-    {
-      padding-top: 20px;
-      background: linear-gradient(to bottom, #243949 0%, #517fa4 100%);
-      padding-bottom: 30px;
-    }
-
-    #demo_link, #trial_link
-    {
-      margin-bottom: 20px;
-    }
-
-    #stats
-    {
-      text-align: center;
-    }
-
-    .blockquote
-    {
-      font-size: 1.5rem;
-    }
-
-    #google_logo
-    {
-      width: 10%;
-    }
-
-    @media only screen and (max-width: 768px)
-    {
-      #google_logo
-      {
-        width: 20%;
-      }
-    }
-
-    .dotted
-    {
-      border-bottom: 1px dotted #000;
-      text-decoration: none;
-    }
-
-    #typing
-    {
-      min-height: 100px;
-      margin-top: 50px;
-      text-align: center;
-    }
-
-    #logos
-    {
-      width: 70%;
-    }
-
-    #contact_form
-    {
-      display: none;
-    }
-
-    #spinner
-    {
-      display: none;
-    }
-
-    #submitted_message
-    {
-      color: white;
-    }
-
-    #trial_link
-    {
-      background-color: transparent;
-      border-color: black;
-    }
-    #trial_link:hover
-    {
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-    }
-
-    #logos_top
-    {
-      height: 50px;
-    }
-
-    #how_it_works_video_1
-    {
-      height: 540px;
-      width: 537px;
-    }
-    </style>
-
-    <script>
-    jQuery(document).ready(function($)
-    {
-      $('#stats_numbers').one('inview', function(event, isInView) {
-        if (isInView)
-        {
-          // element is now visible in the viewport
-          var options = {
-            useEasing : true,
-            useGrouping : true,
-            separator : ',',
-            decimal : '.',
-            prefix: '',
-            duration: 2
-          };
-          var demo = new CountUp("videos_created", 0, 23407, 0, 2, options);
-          demo.start();
-
-          var demo = new CountUp("hours_audio", 0, 302597, 0, 2, options);
-          demo.start();
-
-          var demo = new CountUp("video_views", 0, 12373121, 0, 2, options);
-          demo.start();
-        }
-        else
-        {
-          // element has gone out of viewport
-        }
-      });
-
-      $('#hack_carousel').one('inview', function(event, isInView)
-      {
-        if (isInView)
-        {
-          $('#hack_carousel').carousel();//start it
-        }
-      });
-
-      //40, 100, 999
-      //week, month, quarter
-      //gasoline, software, flights & hotels
-      //ca, usa, anywhere
-
-
-      //var typed = new Typed("#category", category_options);
-      //var typed = new Typed("#location", location_options);
-
-      /*function gtag_report_conversion(url)
-      {
-        var callback = function () {
-          if (typeof(url) != 'undefined') {
-            window.location = url;
-          }
-        };
-        gtag('event', 'conversion', {
-            'send_to': 'AW-955637341/HwFlCIXd95kBEN2818cD',
-            'event_callback': callback
-        });
-        return false;
-      }*/
-
-      first_sentence();
-
-      $("#demo_link").click(function()
-      {
-        $("#contact_form").show();
-        //href="https://www.breachblocker.app/request_demo.html"
-      });
-      $("#trial_link").click(function()
-      {
-        $("#contact_form").show();
-        //href="https://www.breachblocker.app/request_demo.html"
-      });
-      $("#contact_submit").click(function()
-      {
-        $("#spinner").show();
-        //gtag_report_conversion();
-        $.ajax({
-      			type: "POST",
-      			url: "https://n26rn51g0a.execute-api.us-west-2.amazonaws.com/dev/auth/contact_form",
-      			contentType: 'json',
-      			dataType: 'json',
-      			data: JSON.stringify({
-              email_address: $("#email_address").val(),
-      				name: $("#name").val(),
-              source: 'summation'
-            })
-    		  }).done(function(msg)
-    		  {
-            $("#spinner").hide();
-      			$("#submitted_message").html("Thanks!  We'll be in touch shortly!");
-          });
-      });
-    });
-
-    var typing_speed = 30;
-    function first_sentence()
-    {
-      /*$("#typing").html("<span id='first_message'></span>");
-      var options = {
-        strings: ['"Hey Justine, hope you enjoyed shopping on our site last week."','"I noticed that you put a few items in your cart, but haven’t checked out yet."','"Just wanted to let you know that I’m sending you a 15% off coupon to help with that order."','"We’re also starting our summer sale on clothing & beauty brands next week, so look out for that!"'],
-        typeSpeed: typing_speed,
-        onComplete: (self) => { }
-      }
-      var typed = new Typed("#first_message", options);*/
-    }
-    </script>
-  </head>
-
-  <body>
-
-    <!-- Main container -->
-    <main class="main-content">
-
-      <section class="section overflow-hidden" id="header">
-
-        <!-- Topbar -->
-        <nav class="topbar topbar-inverse topbar-expand-sm">
-          <div class="container">
-
-            <div class="topbar-left">
-              <button class="topbar-toggler">&#9776;</button>
-            </div>
-
-            <div class="topbar-right">
-              <ul class="topbar-nav nav">
-                <li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing/">Pricing</a></li>
-                <li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing/index.html#faq">FAQ</a></li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-        <!-- END Topbar -->
-
-      <div class="container" style="padding-top: 50px;">
-
-        <div class="row">
-          <div class="col-12 col-sm-6">
-            <h1 style="font-family: 'Montserrat', sans-serif; color: white;">Video & Photo Face Swapping</h1>
-            <br/>
-            <h4 style="font-family: 'Montserrat', sans-serif; color: white;">AI <span class="mark-border">replaces faces in videos</span> & photos</h4>
-            <br/>
-            <!--<a class="btn btn-lg btn-round w-250 btn-dark mr-16 cta" href="https://app.breachblocker.app" style="margin-top: 10px; line-height: normal;">Get Secure</a>-->
-            <!--<a class="btn btn-lg btn-round w-250 btn-success mr-16 cta" id="demo_link" href="https://calendly.com/josh_breachblocker/intro_chat" style="margin-top: 10px; line-height: normal;">Schedule a Demo</a>-->
-            <!--<a class="btn btn-lg btn-round w-250 mr-16 cta" id="trial_link" style="margin-top: 10px; line-height: normal;">Create your 1<sup>st</sup> Video</a>-->
-
-            <a class="btn btn-lg btn-round w-250 btn-success mr-16 cta" href="https://app.facedub.app" style="margin-top: 10px; line-height: normal;">Get Started, Free</a>
-
-            <div id='contact_form' class='form-group'>
-              <input type='text' class="form-control" id='name' placeholder='Your Name'>
-              <br/>
-              <input tppe='text' class="form-control" id='email_address' placeholder='Email Address'>
-              <br/>
-              <button class="btn btn-round btn-success" id='contact_submit'>Submit</button>
-              <br/>
-              <img id='spinner' src='assets/img/spinner.svg'>
-              <div id='submitted_message'></div>
-            </div>
-
-          </div>
-
-          <div class="col-sm-6" style="text-align: right;">
-            <video id='top_video' controls playsinline autoplay muted loop alt="..." data-aos="fade-left" data-aos-delay="200">
-              <source src="assets/img/swap_demo.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-            </video>
-            <div id='typing'></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-      <section class="section pb-0 overflow-hidden" id="stats">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+    <meta name="keywords" content="deepfake, video, face, swap, ai, machine learning, deep learning, app, generator, software">
+
+    <title>FaceDub - AI Face Swapping for Videos & Photos</title>
+
+	<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+	<link rel="icon" href="assets/img/favicon.png">
+
+	<style>
+	section
+	{
+	  padding-top: 25px!important;
+	}
+
+	@media only screen and (min-width: 768px) {
+	  header {
+		height: 240px;
+		line-height: 240px;
+	  }
+	  header h1 {
+		font-size: 32px;
+		font-size: 2rem;
+	  }
+	  #top_video
+	  {
+		width: 100%;
+	  }
+	  .widget_image > img
+	  {
+		  max-width: 100% !important;
+	  }
+	  .title
+	  {
+		  font-size: 125% !important;
+	  }
+	  .widget_text
+	  {
+		  /*font-size: 100% !important;*/
+	  }
+	}
+
+	@media only screen and (max-width: 768px) 
+	{
+		#try
+	  	{
+			width: 50% !important;
+	  	}
+
+		.demo_button
+		{
+			padding: 5px !important;
+			margin: 6px !important; 
+			width: 25% !important;
+		}
+
+		#image_comparison
+		{
+			width: 100%;
+		}
+
+		#get_started
+		{
+			margin-bottom: 10px;
+			width: 100% !important;
+		}
+
+		#header
+		{
+			padding-bottom: 25px !important;
+		}
+
+		#demo_video
+		{
+			width: 100%;
+		}
+
+		#demo_video_buttons
+		{
+			width: 100%;
+			margin: auto;
+		}
+
+		#original_video, #modified_video
+		{
+			font-size: 0.75rem;
+		}
+	}
+
+	#demo_video_buttons
+	{
+		margin-bottom: 10px;
+	}
+
+	#image_comparison img
+	{
+		border-radius: 10px;
+	}
+
+	.demo_button
+	{
+		border: 1px solid black; 
+		padding: 10px; 
+		border-radius: 5px; 
+		margin: 10px; 
+		margin: auto; 
+		width: 25%; 
+		text-align: center;
+	}
+
+	.carousel-caption h5
+	{
+	  color: black;
+	}
+
+	.cta
+	{
+	  border-radius: 10rem;
+	  font-family: 'Montserrat', sans-serif;
+	  text-transform: none;
+	}
+
+	.demo
+	{
+	  border-radius: 10rem;
+	  background-color: transparent;
+	  border-color: white;
+	  color: white !important;
+	}
+
+	.demo:hover
+	{
+	  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+	}
+
+	#demo_video
+	{
+	  border-radius: 10px;
+	}
+
+	#header
+	{
+	  padding-top: 20px;
+	  background: rgba(84, 87, 120, 1);
+	  padding-bottom: 30px;
+	}
+
+	#demo_link, #trial_link
+	{
+	  margin-bottom: 20px;
+	  font-size: 120%;
+	  border-radius: 10px;
+	  padding-top: 10px;
+	  padding-bottom: 10px;
+	  padding-left: 15px;
+	  padding-right: 15px;
+	  text-transform: none;
+	}
+
+	#stats
+	{
+	  text-align: center;
+	}
+
+	.dotted
+	{
+	  border-bottom: 1px dotted #000;
+	  text-decoration: none;
+	}
+
+	#spinner
+	{
+	  display: none;
+	}
+
+	#trial_link:hover
+	{
+	  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+	}
+
+	.section_header
+	{
+	  text-align: center;
+	}
+	.icon_col
+	{
+	  text-align: center;
+	  cursor: pointer;
+	}
+	.title
+	{
+	  text-transform: uppercase;
+	  margin-left: 10px;
+	  margin-right: 10px;
+	  font-size: 125%;
+	  text-align: center !important;
+	  display: block !important;
+	  font-weight: 500;
+	}
+	.highlighted
+	{
+		color: navy;
+	}
+	.icon_col:not(.highlighted)
+	{
+		color: gray;
+	}
+
+	#header
+	{
+		padding-bottom: 0px;
+	}
+
+	#navbar
+	{
+	  background-color: rgba(84, 87, 120, 1) !important;
+	}
+
+	.nav-link
+	{
+	  font-size: 125%;
+	  margin-right: 50px;
+	}
+
+	/* Typography */
+
+	body {
+		font-family: Helvetica, Arial, sans serif;
+	}
+
+	.jx-knightlab 
+	{
+ 		display: none !important;
+	}
+
+	.tagline {
+		font-weight: normal;
+		font-size: 24px;
+	}
+
+	a {
+		font-weight: bold;
+		text-decoration: none;
+		color: #33CCFF;
+	}
+
+	</style>
+	<link href="assets/css/cleaned.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/juxtaposejs@1.1.6/build/css/juxtapose.css">
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/combine/gh/jquery/jquery@3.4/dist/jquery.min.js,gh/twbs/bootstrap@4.1.3/dist/js/bootstrap.min.js,npm/lazysizes@5.2.0/lazysizes.min.js,npm/countup@1.8.2/dist/countUp.min.js,npm/jquery-inview@1.1.2/jquery.inview.min.js,npm/juxtaposejs@1.1.6/build/js/juxtapose.min.js"></script>
+	<script>
+	jQuery(document).ready(function($)
+	{
+		$('#stats_numbers').one('inview', function(event, isInView)
+		{
+			if (isInView)
+			{
+			// element is now visible in the viewport
+			var options = {
+				useEasing : true,
+				useGrouping : true,
+				separator : ',',
+				decimal : '.',
+				prefix: '',
+				duration: 2
+			};
+			var demo = new CountUp("videos_created", 0, 23407, 0, 2, options);
+			demo.start();
+
+			var demo = new CountUp("photos_created", 0, 302597, 0, 2, options);
+			demo.start();
+
+			var demo = new CountUp("video_views", 0, 12373121, 0, 2, options);
+			demo.start();
+			}
+			else
+			{
+			// element has gone out of viewport
+			}
+      	});
+
+		image_comparison_slider();
+	});
+
+	function image_comparison_slider()
+	{
+		slider = new juxtapose.JXSlider('#image_comparison',
+		[
+			{
+				src: 'assets/img/tom_cruise.jpg',
+				label: null,
+				credit: null
+			},
+			{
+				src: 'assets/img/tom_carrey.jpg',
+				label: null,
+				credit: null
+			}
+		],
+		{
+			animate: true,
+			showLabels: false,
+			showCredits: false,
+			startingPosition: "75%",
+			makeResponsive: true
+		});
+
+		$("#original_video").click(function() 
+		{
+			switch_video('original')
+		});
+		$("#modified_video").click(function() 
+		{
+			switch_video('modified')
+		});
+	}
+
+	function switch_image(name)
+	{
+		if(name=="pitt")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_pitt_cropped.png");
+		}
+		if(name=="musk")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_musk_cropped.png");
+		}
+		if(name=="cruise")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_cruise_cropped.png");
+		}
+		if(name=="cage")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_cage_cropped.png");
+		}
+	}
+
+	function switch_video(name)
+	{
+		console.log('switch')
+		if(name=="original")
+		{
+			$("#demo_video").attr("src", "assets/img/friends.mp4");
+		}
+		else if(name=="modified")
+		{
+			$("#demo_video").attr("src", "assets/img/friends_trump.mp4");
+		}
+	}
+	</script>
+	<script>
+		!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var key=analytics.methods[e];analytics[key]=analytics.factory(key)}analytics.load=function(key,e){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);analytics._loadOptions=e};analytics._writeKey="CLuOxmvg8X5DwqJOpgFxa0D8nSqv3KZW";analytics.SNIPPET_VERSION="4.13.2";
+		analytics.load("CLuOxmvg8X5DwqJOpgFxa0D8nSqv3KZW");
+		analytics.page();
+		}}();
+	</script>
+</head>
+
+<body>
+
+	<div id="container"></div>
+	<main class="main-content">
+
+	  <section class="section overflow-hidden" id="header">
+
+	  <nav class="navbar navbar-expand-md bg-dark navbar-dark" id="navbar">
+	  
+		<!-- Toggler/collapsibe Button -->
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+	  
+		<!-- Navbar links -->
+		<div class="collapse navbar-collapse justify-content-end" id="collapsibleNavbar" style="margin-right: 200px;">
+		  <ul class="navbar-nav">
+			<li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing#faq">F.A.Q.</a></li>
+			<li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing">Pricing</a></li>
+			<li class="nav-item"><a class="nav-link" href="https://app.facedub.app">Login</a></li>
+		  </ul>
+		</div>
+	  </nav>
+
+	  <div class="container" style="padding-top: 50px;">
+
+		<div class="row">
+		  <div class="col-12 col-sm-6">
+			<h1 style="font-family: Poppins, sans-serif; color: white; font-size: 58px; font-weight: 500;">Video Face Swapping</h1>
+			<br/>
+			<h4 style="font-family: 'Montserrat', sans-serif; color: white;">Replace faces in any video/photo with our AI app</h4>
+			<br/>
+			<a class="btn btn-lg btn-round w-300 btn-success mr-16 cta" id="get_started" href="https://app.facedub.app">Get Started, Free</a>
+		  </div>
+
+		  <div class="col-sm-6" style="text-align: right;">
+            <div id="image_comparison">
+			</div>
+		  </div>
+		  <br/>
+		  <br/>
+		</div>
+	  </div>
+	</section>
+
+	<section class="section pb-0 overflow-hidden" id="demo">
+		<div class="container widget">
+			<div class="row" style="margin: auto; width: 80%; text-align: center;">
+				<h4 style="margin: auto; width: 50%;">Select a face to swap with</h4>
+				<img src="assets/img/try_it_now.png" id="try" style="width: 20%; margin: auto;">
+			</div>
+			<div class="row" style="margin: auto; width: 80%; margin-bottom: 10px;">
+				<div class="demo_button">
+					<a href="javascript:switch_image('pitt')">Brad Pitt</a>
+				</div>
+				<div class="demo_button">
+					<a href="javascript:switch_image('cruise')">Tom Cruise</a>
+				</div>
+				<div class="demo_button">
+					<a href="javascript:switch_image('musk')">Elon Musk</a>
+				</div>
+			</div>
+			<div class="row">
+				<img src="assets/img/obama_original_cropped.png" id="demo_image"  style="margin: auto; width: 80%; border-radius: 10px;">
+			</div>
+		</div>
+	</section>
+
+	<section class="section pb-0 overflow-hidden" id="solution">
+		<div class="container widget">
+			<div class="row">
+			  <div class="col-sm" id="second_col" style="margin: 20px; margin-top: 10%;">
+				<div class="row">
+					<h3>Pick any Video</h3>
+					<p>Link to a Youtube video, search for GIFs, or upload your own.</p>
+				</div>
+				<div class="row">
+					<h3>Select a Face to Replace</h3>
+					<p>Select from one of our templates, or upload your own photo of any face.</p>
+				</div>
+				<div class="row">
+					<h3>Our AI replaces their face in the video/photo</h3>
+					<p>Get realistic results that are indistinguishable from reality.</p>
+					<p></p>				
+				</div>
+			  </div>
+			  <div class="col-sm order-first order-md-last">
+				<div id="demo_video_buttons" class="btn-group btn-group-toggle" data-toggle="buttons">
+					<label class="btn btn-outline-primary active" id="original_video">
+					  <input type="radio" name="options" id="option1" autocomplete="off">Original Video
+					</label>
+					<label class="btn btn-outline-primary" id="modified_video">
+					  <input type="radio" name="options" id="option2" autocomplete="off">Modified Video
+					</label>
+				</div>
+				<video id='demo_video' controls playsinline autoplay muted loop alt="..." data-aos="fade-left" data-aos-delay="200">
+					<source src="assets/img/friends.mp4" type="video/mp4">
+				  Your browser does not support the video tag.
+				</video>
+			  </div>
+			</div>
+		 </div>
+	</section>
+
+	<section class="section pb-0 overflow-hidden" id="stats">
         <div class="container">
-          <!--<blockquote class="blockquote text-center">
-            <p class="mb-0">automatically reset[ing] the password... exposed in a third party data breach... reduces the risk of your account getting hacked by a <b>factor of 10</b></p>
-            <footer class="blockquote-footer"><a href='https://www.blog.google/technology/safety-security/google-password-checkup-cross-account-protection/'>Kurt Thomas & Angelika Moscicki</a>,
-              <br/><cite title="Source Title"><img src='assets/img/google_logo.png' id='google_logo'></cite></footer>
-          </blockquote>-->
 
           <div class="row" id="stats_numbers">
             <div class="col-sm">
@@ -583,7 +477,7 @@
             </div>
 
             <div class="col-sm">
-              <h4 style="color: #2478FF" id="hours_audio"></h4><br>
+              <h4 style="color: #2478FF" id="photos_created"></h4><br>
               <h5>photos created</h5>
             </div>
 
@@ -594,192 +488,120 @@
 
           </div>
 
-          <div id='quote'>
-          </div>
-
           <br><br>
 
       </section>
+				
 
-      <section class="section pb-0 overflow-hidden" id="problem">
+	  <!--<section class="section pb-0 overflow-hidden">
 
-        <div class="container">
-          <div class="row align-items-center">
-
-            <div class="col-12 col-md-6" style="margin-bottom: -40px;">
-              <div id="hack_carousel" data-ride="carousel" data-interval="2000" data-aos="fade-left" data-aos-delay="200">
-
-              <video id='top_video' controls playsinline autoplay muted loop alt="..." data-aos="fade-left" data-aos-delay="200">
-                <source src="assets/img/chinese_pm.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-              </video>
-
-              </div>
-            </div>
-
-            <div class="col-12 col-md-6 order-first order-md-last" style="padding-top: 45px;">
-              <h2>Swap any Face</h2>
-              <p class="lead">
-                - Redo your favorite movies with the actor of your choice<br/>
-                - Digital gifts
-                - Replace a stunt double's footage with the actor's face<br/>
-                - Bring to life deceased actors<br/>
-              </p>
-              <br>
-
-              <div class="flexbox gap-items-4">
-                <div>
-                  <i class="fas fa-edit"></i>
-                </div>
-
-              <div class="flexbox gap-items-4">
-                <div>
-                  <i class="far fa-grin-alt"></i>
-                </div>
-
-                <div>
-                  <h5>Upload or Link to your Video</h5>
-                  <p>Or link to an existing one one Youtube.</p>
-                </div>
-              </div>
-
-              <div class="flexbox gap-items-4">
-                <div>
-                  <i class="far fa-envelope"></i>
-                </div>
-
-                <div>
-                  <h5>Select a Face to Replace</h5>
-                  <p>Select from one of our templates, or upload your own photo</p>
-                </div>
-              </div>
-
-              <div class="flexbox gap-items-4">
-                <div>
-                  <i class="fas fa-video"></i>
-                </div>
-
-                <div>
-                  <h5>Our AI replaces their face in the video/photo seamlessly</h5>
-                  <p></p>
-                </div>
-              </div>
-
-          </div>
-        </div>
-      </section>
-
-      <!--<section class="section pb-0 overflow-hidden" id="solution">
-
-        <div class="container">
-          <div class="row align-items-center">
-
-            <div class="col-12 col-md-6" style="padding-top: 45px;">
-              <h2>Grow Movie and TV audiences Internationally</h2>
-              <p class="lead">
-              Without the poor, jarring viewing experience of audio-only dubbing.
-              </p>
-              <br>
-
-              <div class="flexbox gap-items-4">
-                <div>
-                  <i class="fas fa-comment-dollar"></i>
-                </div>
-
-                <div>
-                  <h5>Select your Languages</h5>
-                  <p>Our actors will re-do the footage in the language of your choice, while matching the facial expressions of the actor.</p>
-                </div>
-              </div>
-
-              <div class="flexbox gap-items-4">
-                <div>
-                  <i class="fas fa-sync"></i>
-                </div>
-
-                <div>
-                  <h5>Our AI perfectly lip-syncs the actor's face to the translated audio</h5>
-                  <p>Your customers can continue to receive videos from the same digital persona for years, helping to build up brand loyalty and an established relationship - unlike using videos of employees or actors who may leave after a year.</p>
-                </div>
-              </div>
-            </div>
+				- Redo your favorite movies with the actor of your choice<br/>
+				- Digital gifts
+				- Replace a stunt double's footage with the actor's face<br/>
+				- Bring to life deceased actors<br/>
 
 
-            <div class="col-12 col-md-6">
+		<div class="container widget">
+		  <div class="row">
+			<div class="col-sm">
+              <div class="row" style="text-align: center;"><h1>Use in Stores or Online</h1></div>
+			  <img src='https://miro.medium.com/max/700/1*rMsEBmcWZbtsKNijW8WclA.jpeg' style="border-radius: 10px;">
+			</div>
+			<div class="col-sm" style="margin: 20px; margin-top: 10%;">
+			  <div class="row">
+				<h3>Apple Pay & Google Pay</h3>
+				<p>Employees can add their cards to their smartphones to pay at millions of point-of-sale locations worldwide.</p>
+			  </div>
+			  <div class="row">
+				<h3>Spend Online</h3>
+				<p>The cards are accepted at any online merchant that accepts Visa/Mastercard.</p>
+			  </div>
+			  <div class="row">
+				<h3>Secure by Default</h3>
+				<p>We monitor transactions for any suspicious activity, so you don't have to worry about stolen cards.</p>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </section>
 
-            <div id="hack_carousel" class="carousel slide carousel-fade" data-interval="2000" data-aos="fade-left" data-aos-delay="200">
-              <video id='how_it_works_video_1' class="video-fluid" autoplay loop muted>
-                <source src="assets/img/face_mesh2.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-              </video>
-            </div>
-      </section>-->
+	  <section class="section pb-0 overflow-hidden" id="solution">
+		<div class="container widget">
+			<div class="row">
+			  <div class="col-sm" id="second_col" style="margin: 20px; margin-top: 10%;">
+				<div class="row">
+				  	<h3>Apply in Seconds</h3>
+				  	<p>Just link your bank account & accounting software, and you'll apply for a 30-day line of credit.<sup>*</sup></p>
+				</div>
+				<div class="row">
+				  	<h3>Grows with your Business</h3>
+				  	<p>As your revenue grows, so does your credit line - automatically.  You don't need to re-apply!</p>
+				</div>
+				<div class="row">
+					<h3>No Personal Guarantee/Credit Checks</h3>
+					<p>We don't ask for any personal guarantees or run credit checks on the business's owners; we purely rely on your business's financial performance.</p>
+				</div>
+			  </div>
+			  <div class="col-sm order-first order-md-last">
+				<div class="row" style="text-align: center;"><h1>Grow with Credit Cards</h1></div>
+				<img src='assets/img/credit_card.png' style='width: 80%; margin-top: 35px;'>
+			  </div>
+			</div>
+		 </div>
+		</section>
 
-      <!--<section class="section pb-0 overflow-hidden" id="integrations">
-        <div class="container">
-          <div class="row align-items-center">
+		<section class="section pb-0 overflow-hidden" id="integrations">
+			<div class="container widget">
+				<div class="row align-items-center" style="padding: 5px;">
+				<h1 style="text-align: center; width: 100%">Built-In Integrations to Automate your Workflow</h1>
+				</div>
+				<div class="widget_text row align-items-center" style="padding: 5px;">
+					<p>We get it - change is hard.  Our integrations allow you to get started quickly, and deliver value in minutes, not weeks.</p>
+				</div>
+				<div class="row align-items-center widget_image" style="padding: 15px;">
+				<img data-src="assets/img/accounting_integrations.png" class='lazyload'>
+				</div>
+			</div>
+		</section>-->
 
-            <div class="col-12 col-md-6">
-              <div style="margin: 20px auto; width: 100%; text-align: center;" alt="..." data-aos="fade-left" data-aos-delay="200">
-                <i class="fab fa-salesforce fa-4x integration_icon"></i>
-                <i class="fab fa-hubspot fa-4x integration_icon"></i>
-                <i class="fab fa-mailchimp fa-4x integration_icon"></i>
-              </div>
-            </div>
+	</main>
 
-            <div class="col-12 col-md-6">
-              <h2>Seamless Integrations</h2>
-              <p class="lead">Create and share videos on autopilot, with integrations into your existing workflows and tools via our open API, including Google Sheets, Youtube, and hundreds more via Zapier.</p>
-              <br>
-            </div>
+	<footer class="site-footer py-90" style="background-image:url('assets/img/low_poly_background_small.jpg'); color: white;">
+	  <div class="container">
+		<div class="row">
+		  <div class="col-4">
+			<h6 class="heading-alt text-uppercase fs-14 mb-3">Product</h6>
+			<div class="nav flex-column">
+			  <a class="nav-link" href="https://www.facedub.app/pricing">Pricing</a>
+			  <a class="nav-link" href="https://www.facedub.app/pricing#faq">F.A.Q.</a>
+			</div>
+		  </div>
 
-          </div>
-        </div>
-      </section>-->
+		  <div class="col-4">
+			<h6 class="heading-alt text-uppercase fs-14 mb-3">Resources</h6>
+			<div class="nav flex-column">
+			  <a class="nav-link" href="https://twitter.com/facedub">TikTok</a>
+			  <a class="nav-link" href="https://twitter.com/facedub">Instagram</a>
+			  <a class="nav-link" href="https://twitter.com/facedub">YouTube</a>
+			  <a class="nav-link" href="https://twitter.com/facedub">Twitter</a>
+			  <a class="nav-link" href="https://blog.facedub.app">Blog</a>
+			  <a class="nav-link" href="https://statuspage.freshping.io/22104-Summation">Status</a>
+			  
+			</div>
+		  </div>
 
-    </main>
-    <!-- END Main container -->
+		  <div class="col-4">
+			<h6 class="heading-alt text-uppercase fs-14 mb-3">Company</h6>
+			<div class="nav flex-column">
+			  <a class="nav-link" href="https://www.facedub.app/contact">Contact Us</a>
+			  <a class="nav-link" href="mailto:careers@facedub.app">Careers</a>
+			  <a class="nav-link" href="https://www.facedub.app/privacy">Privacy</a>
+			</div>
+		  </div>
 
-    <!-- Footer -->
-    <footer class="site-footer py-90" style="background-image:url('assets/img/low_poly_background_small.jpg'); color: white;">
-      <div class="container">
-
-        <div class="row gap-y">
-          <div class="col-12 col-md-4 col-lg-4">
-            <h6 class="heading-alt text-uppercase fs-14 mb-3">Product</h6>
-            <div class="nav flex-column">
-              <a class="nav-link" href="https://www.facedub.app/pricing/index.html#faq">FAQ</a>
-              <a class="nav-link" href="https://www.facedub.app/pricing/">Pricing</a>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-4 col-lg-4">
-            <h6 class="heading-alt text-uppercase fs-14 mb-3">Resources</h6>
-            <div class="nav flex-column">
-              <a class="nav-link" href="https://medium.com/@facedub">Blog</a>
-            </div>
-            <div class="social text-center">
-              <a class="social-twitter" href="https://twitter.com/facedub"><i class="fa fa-twitter"></i></a>
-              <!--<a class="social-youtube" href="#"><i class="fa fa-youtube"></i></a>-->
-            </div>
-          </div>
-
-          <div class="col-12 col-md-4 col-lg-4">
-            <h6 class="heading-alt text-uppercase fs-14 mb-3">Company</h6>
-            <div class="nav flex-column">
-              <a class="nav-link" href="https://www.facedub.com/contact">Contact Us</a>
-              <a class="nav-link" href="https://www.facedub.com/privacy-policy">Privacy</a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </footer>
-    <!-- END Footer -->
-
-    <!-- Scripts -->
-    <script src="assets/js/core.min.js"></script>
-    <script src="assets/js/thesaas.min.js"></script>
-    <script src="assets/js/script.js"></script>
+		</div>
+		<div class="row"></div>
+	  </div>
+	</footer>
   </body>
 </html>
