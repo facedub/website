@@ -153,7 +153,7 @@ window.addEventListener("message", (event) => {
       console.log('unhandled', event);
       break;
   }
-});
+}, false);
 
 startButton.onclick = async () => {
   localStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
@@ -163,12 +163,12 @@ startButton.onclick = async () => {
   startButton.disabled = true;
   hangupButton.disabled = false;
 
-  window.postMessage({type: 'ready'}, window.parent);
+  window.parent.postMessage({type: 'ready'}, '*');
 };
 
 hangupButton.onclick = async () => {
   hangup();
-  window.postMessage({type: 'bye'}, window.parent);
+  window.parent.postMessage({type: 'bye'}, '*');
 };
 
 async function hangup() {
@@ -194,7 +194,7 @@ function createPeerConnection() {
       message.sdpMid = e.candidate.sdpMid;
       message.sdpMLineIndex = e.candidate.sdpMLineIndex;
     }
-    window.postMessage(message,  window.parent);
+    window.parent.postMessage(message,  '*');
   };
   pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
   localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
@@ -204,7 +204,7 @@ async function makeCall() {
   await createPeerConnection();
 
   const offer = await pc.createOffer();
-  window.postMessage({type: 'offer', sdp: offer.sdp}, window.parent);
+  window.parent.postMessage({type: 'offer', sdp: offer.sdp}, '*');
   await pc.setLocalDescription(offer);
 }
 
@@ -217,7 +217,7 @@ async function handleOffer(offer) {
   await pc.setRemoteDescription(offer);
 
   const answer = await pc.createAnswer();
-  window.postMessage({type: 'answer', sdp: answer.sdp}, window.parent);
+  window.parent.postMessage({type: 'answer', sdp: answer.sdp}, '*');
   await pc.setLocalDescription(answer);
 }
 
