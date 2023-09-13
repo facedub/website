@@ -1,479 +1,603 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+    <meta name="keywords" content="deepfake, video, face, swap, ai, machine learning, deep learning, app, generator, software">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="keywords"
-    content="ai, dreambooth, stable diffusion, create, creator, influencer, face, swap, photo, picture, image, app, generator, software, avatar, personalize">
+    <title>FaceDub - AI Face Swapping for Videos & Photos</title>
 
-  <title>FaceDub - AI photos for Instagram</title>
+	<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+	<link rel="icon" href="assets/img/favicon.png">
 
-  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="icon" href="assets/img/favicon.png">
-
-  <style>
-    section {
-      padding-top: 25px !important;
-    }
-
-    @media only screen and (min-width: 768px) {
-      header {
-        height: 240px;
-        line-height: 240px;
-      }
-
-      header h1 {
-        font-size: 32px;
-        font-size: 2rem;
-      }
-
-      #top_video {
-        width: 100%;
-      }
-
-      .widget_image>img {
-        max-width: 100% !important;
-      }
-
-      .title {
-        font-size: 125% !important;
-      }
-
-      .widget_text {
-        /*font-size: 100% !important;*/
-      }
-    }
-
-    @media only screen and (max-width: 768px) {
-      #try {
-        width: 50% !important;
-      }
-
-      .demo_button {
-        padding: 5px !important;
-        margin: 6px !important;
-        width: 25% !important;
-      }
-
-      #image_comparison {
-        width: 100%;
-      }
-
-      #get_started {
-        margin-bottom: 10px;
-        width: 100% !important;
-      }
-
-      #header {
-        padding-bottom: 25px !important;
-      }
-
-      #demo_video {
-        width: 100%;
-      }
-
-      #demo_video_buttons {
-        width: 100%;
-        margin: auto;
-      }
-    }
-
-    #demo_video_buttons {
-      margin-bottom: 10px;
-    }
-
-    .demo_button {
-      border: 1px solid black;
-      padding: 10px;
-      border-radius: 5px;
-      margin: 10px;
-      margin: auto;
-      width: 25%;
-      text-align: center;
-    }
-
-    .carousel-caption h5 {
-      color: black;
-    }
-
-    .cta {
-      border-radius: 10rem;
-      font-family: 'Montserrat', sans-serif;
-      text-transform: none;
-    }
-
-    .demo {
-      border-radius: 10rem;
-      background-color: transparent;
-      border-color: white;
-      color: white !important;
-    }
-
-    .demo:hover {
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    }
-
-    #demo_video {
-      border-radius: 10px;
-    }
-
-    #header {
-      padding-top: 20px;
-      background: rgba(84, 87, 120, 1);
-      padding-bottom: 30px;
-    }
-
-    #demo_link,
-    #trial_link {
-      margin-bottom: 20px;
-      font-size: 120%;
-      border-radius: 10px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      padding-left: 15px;
-      padding-right: 15px;
-      text-transform: none;
-    }
-
-    #stats {
-      text-align: center;
-    }
-
-    .dotted {
-      border-bottom: 1px dotted #000;
-      text-decoration: none;
-    }
-
-    #spinner {
-      display: none;
-    }
-
-    #trial_link:hover {
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    }
-
-    .section_header {
-      text-align: center;
-    }
-
-    .icon_col {
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .title {
-      text-transform: uppercase;
-      margin-left: 10px;
-      margin-right: 10px;
-      font-size: 125%;
-      text-align: center !important;
-      display: block !important;
-      font-weight: 500;
-    }
-
-    .highlighted {
-      color: navy;
-    }
-
-    .icon_col:not(.highlighted) {
-      color: gray;
-    }
-
-    #header {
-      padding-bottom: 0px;
-    }
-
-    #navbar {
-      background-color: rgba(84, 87, 120, 1) !important;
-    }
-
-    .nav-link {
-      font-size: 125%;
-      margin-right: 50px;
-    }
-
-    /* Typography */
-
-    body {
-      font-family: Helvetica, Arial, sans serif;
-    }
-
-    .tagline {
-      font-weight: normal;
-      font-size: 24px;
-    }
-
-    a {
-      font-weight: bold;
-      text-decoration: none;
-      color: #33CCFF;
-    }
-
-    .typed-cursor {
-      color: white;
-    }
-
-	.text-gradient
+	<style>
+	section
 	{
-		background: -webkit-linear-gradient(0deg, #f48200 0%, transparent 70%),
-            -webkit-radial-gradient(#7e00ff 0%, rgba(0,0,0,0) 70%),
-            -webkit-radial-gradient(#ec00ff 0%, rgba(0,0,0,0) 70%),
-            #ff0000;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+	  padding-top: 25px!important;
 	}
-  </style>
-  <link href="assets/css/cleaned.css" rel="stylesheet">
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/combine/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
-  <script type="text/javascript"
-    src="https://cdn.jsdelivr.net/combine/gh/jquery/jquery@3.4/dist/jquery.min.js,gh/twbs/bootstrap@4.1.3/dist/js/bootstrap.min.js,npm/lazysizes@5.2.0/lazysizes.min.js,npm/lazysizes@5.3.2/plugins/unveilhooks/ls.unveilhooks.min.js,npm/countup@1.8.2/dist/countUp.min.js,npm/jquery-inview@1.1.2/jquery.inview.min.js,npm/typed.js@2.0.16/dist/typed.umd.min.js"></script>
-  <script>
-    jQuery(document).ready(function ($) {
-      $('#stats_numbers').one('inview', function (event, isInView) {
-        if (isInView) {
-          // element is now visible in the viewport
-          var options = {
-            useEasing: true,
-            useGrouping: true,
-            separator: ',',
-            decimal: '.',
-            prefix: '',
-            duration: 2
-          };
-          var demo = new CountUp("videos_created", 0, 23407, 0, 2, options);
-          demo.start();
 
-          var demo = new CountUp("photos_created", 0, 302597, 0, 2, options);
-          demo.start();
+	@media only screen and (min-width: 768px) {
+	  header {
+		height: 240px;
+		line-height: 240px;
+	  }
+	  header h1 {
+		font-size: 32px;
+		font-size: 2rem;
+	  }
+	  #top_video
+	  {
+		width: 100%;
+	  }
+	  .widget_image > img
+	  {
+		  max-width: 100% !important;
+	  }
+	  .title
+	  {
+		  font-size: 125% !important;
+	  }
+	  .widget_text
+	  {
+		  /*font-size: 100% !important;*/
+	  }
+	}
 
-          var demo = new CountUp("video_views", 0, 12373121, 0, 2, options);
-          demo.start();
-        }
-        else {
-          // element has gone out of viewport
-        }
-      });
+	@media only screen and (max-width: 768px) 
+	{
+		#try
+	  	{
+			width: 50% !important;
+	  	}
 
-      demo();
-    });
+		.demo_button
+		{
+			padding: 5px !important;
+			margin: 6px !important; 
+			width: 25% !important;
+		}
 
-    function demo() {
-      var typed = new Typed('#prompt',
-        {
-          strings: ['"Portrait of @me, on a yacht, smiling, at sunset"', '"@jessica in a red dress, on a street in London"', '"@Kate, on a beach in Hawaii, wearing sunglasses"'],
-          typeSpeed: 50,
-          loop: true,
-          onStringTyped(arrayPos) 
-		  {
-            console.log('string ' + arrayPos + ' typed', (arrayPos+1)%3);
-            $('#carousel').carousel((arrayPos+1)%3);
-            //wait seconds to change image
-            var delayed_fn_call = setTimeout(function() 
+		#image_comparison
+		{
+			width: 100%;
+		}
+
+		#get_started
+		{
+			margin-bottom: 10px;
+			width: 100% !important;
+		}
+
+		#header
+		{
+			padding-bottom: 25px !important;
+		}
+
+		#demo_video
+		{
+			width: 100%;
+		}
+
+		#demo_video_buttons
+		{
+			width: 100%;
+			margin: auto;
+		}
+
+		#original_video, #modified_video
+		{
+			font-size: 0.75rem;
+		}
+	}
+
+	#demo_video_buttons
+	{
+		margin-bottom: 10px;
+	}
+
+	#image_comparison img
+	{
+		border-radius: 10px;
+	}
+
+	.demo_button
+	{
+		border: 1px solid black; 
+		padding: 10px; 
+		border-radius: 5px; 
+		margin: 10px; 
+		margin: auto; 
+		width: 25%; 
+		text-align: center;
+	}
+
+	.carousel-caption h5
+	{
+	  color: black;
+	}
+
+	.cta
+	{
+	  border-radius: 10rem;
+	  font-family: 'Montserrat', sans-serif;
+	  text-transform: none;
+	}
+
+	.demo
+	{
+	  border-radius: 10rem;
+	  background-color: transparent;
+	  border-color: white;
+	  color: white !important;
+	}
+
+	.demo:hover
+	{
+	  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+	}
+
+	#demo_video
+	{
+	  border-radius: 10px;
+	}
+
+	#header
+	{
+	  padding-top: 20px;
+	  background: rgba(84, 87, 120, 1);
+	  padding-bottom: 30px;
+	}
+
+	#demo_link, #trial_link
+	{
+	  margin-bottom: 20px;
+	  font-size: 120%;
+	  border-radius: 10px;
+	  padding-top: 10px;
+	  padding-bottom: 10px;
+	  padding-left: 15px;
+	  padding-right: 15px;
+	  text-transform: none;
+	}
+
+	#stats
+	{
+	  text-align: center;
+	}
+
+	.dotted
+	{
+	  border-bottom: 1px dotted #000;
+	  text-decoration: none;
+	}
+
+	#spinner
+	{
+	  display: none;
+	}
+
+	#trial_link:hover
+	{
+	  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+	}
+
+	.section_header
+	{
+	  text-align: center;
+	}
+	.icon_col
+	{
+	  text-align: center;
+	  cursor: pointer;
+	}
+	.title
+	{
+	  text-transform: uppercase;
+	  margin-left: 10px;
+	  margin-right: 10px;
+	  font-size: 125%;
+	  text-align: center !important;
+	  display: block !important;
+	  font-weight: 500;
+	}
+	.highlighted
+	{
+		color: navy;
+	}
+	.icon_col:not(.highlighted)
+	{
+		color: gray;
+	}
+
+	#header
+	{
+		padding-bottom: 0px;
+	}
+
+	#navbar
+	{
+	  background-color: rgba(84, 87, 120, 1) !important;
+	}
+
+	.nav-link
+	{
+	  font-size: 125%;
+	  margin-right: 50px;
+	}
+
+	/* Typography */
+
+	body {
+		font-family: Helvetica, Arial, sans serif;
+	}
+
+	.jx-knightlab 
+	{
+ 		display: none !important;
+	}
+
+	.tagline {
+		font-weight: normal;
+		font-size: 24px;
+	}
+
+	a {
+		font-weight: bold;
+		text-decoration: none;
+		color: #33CCFF;
+	}
+
+	</style>
+	<link href="assets/css/cleaned.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/juxtaposejs@1.1.6/build/css/juxtapose.min.css,npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/combine/gh/jquery/jquery@3.4/dist/jquery.min.js,gh/twbs/bootstrap@4.1.3/dist/js/bootstrap.min.js,npm/lazysizes@5.2.0/lazysizes.min.js,npm/lazysizes@5.3.2/plugins/unveilhooks/ls.unveilhooks.min.js,npm/countup@1.8.2/dist/countUp.min.js,npm/jquery-inview@1.1.2/jquery.inview.min.js,npm/juxtaposejs@1.1.6/build/js/juxtapose.min.js"></script>
+	<script>
+	jQuery(document).ready(function($)
+	{
+		$('#stats_numbers').one('inview', function(event, isInView)
+		{
+			if (isInView)
 			{
-				change_ai_image((arrayPos+1)%3);
-			}, 800);
-          },
-        });
+			// element is now visible in the viewport
+			var options = {
+				useEasing : true,
+				useGrouping : true,
+				separator : ',',
+				decimal : '.',
+				prefix: '',
+				duration: 2
+			};
+			var demo = new CountUp("videos_created", 0, 23407, 0, 2, options);
+			demo.start();
 
-      //prompt done
-      //carousel image changes
-      //ai_photo image changes
-      $('#carousel').carousel({interval: false, keyboard: false});
-    }
-	function change_ai_image(index)
+			var demo = new CountUp("photos_created", 0, 302597, 0, 2, options);
+			demo.start();
+
+			var demo = new CountUp("video_views", 0, 12373121, 0, 2, options);
+			demo.start();
+			}
+			else
+			{
+			// element has gone out of viewport
+			}
+      	});
+
+		image_comparison_slider();
+	});
+
+	function image_comparison_slider()
 	{
-		$("#ai_photo").attr("src", 'assets/img/model_' + index + '_gen.jpg');
+		slider = new juxtapose.JXSlider('#image_comparison',
+		[
+			{
+				src: 'assets/img/tom_cruise.jpg',
+				label: null,
+				credit: null
+			},
+			{
+				src: 'assets/img/tom_carrey.jpg',
+				label: null,
+				credit: null
+			}
+		],
+		{
+			animate: true,
+			showLabels: false,
+			showCredits: false,
+			startingPosition: "75%",
+			makeResponsive: true
+		});
+
+		$("#original_video").click(function() 
+		{
+			switch_video('original')
+		});
+		$("#modified_video").click(function() 
+		{
+			switch_video('modified')
+		});
 	}
-  </script>
-  <script>
-    !function () {
-      var analytics = window.analytics = window.analytics || []; if (!analytics.initialize) if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice."); else {
-        analytics.invoked = !0; analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on", "addSourceMiddleware", "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware"]; analytics.factory = function (e) {return function () {var t = Array.prototype.slice.call(arguments); t.unshift(e); analytics.push(t); return analytics}}; for (var e = 0; e < analytics.methods.length; e++) {var key = analytics.methods[e]; analytics[key] = analytics.factory(key)} analytics.load = function (key, e) {var t = document.createElement("script"); t.type = "text/javascript"; t.async = !0; t.src = "https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(t, n); analytics._loadOptions = e}; analytics._writeKey = "CLuOxmvg8X5DwqJOpgFxa0D8nSqv3KZW"; analytics.SNIPPET_VERSION = "4.13.2";
-        analytics.load("CLuOxmvg8X5DwqJOpgFxa0D8nSqv3KZW");
-        analytics.page();
-      }
-    }();
-  </script>
+
+	function switch_image(name)
+	{
+		if(name=="pitt")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_pitt_cropped.png");
+		}
+		if(name=="musk")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_musk_cropped.png");
+		}
+		if(name=="cruise")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_cruise_cropped.png");
+		}
+		if(name=="cage")
+		{
+			$("#demo_image").attr("src", "assets/img/obama_cage_cropped.png");
+		}
+	}
+
+	function switch_video(name)
+	{
+		console.log('switch')
+		if(name=="original")
+		{
+			$("#demo_video").attr("src", "assets/img/friends.mp4");
+		}
+		else if(name=="modified")
+		{
+			$("#demo_video").attr("src", "assets/img/friends_trump.mp4");
+		}
+	}
+	</script>
+	<script>
+		!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var key=analytics.methods[e];analytics[key]=analytics.factory(key)}analytics.load=function(key,e){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);analytics._loadOptions=e};analytics._writeKey="CLuOxmvg8X5DwqJOpgFxa0D8nSqv3KZW";analytics.SNIPPET_VERSION="4.13.2";
+		analytics.load("CLuOxmvg8X5DwqJOpgFxa0D8nSqv3KZW");
+		analytics.page();
+		}}();
+	</script>
 </head>
 
 <body>
 
-  <div id="container"></div>
-  <main class="main-content">
+	<div id="container"></div>
+	<main class="main-content">
 
-    <section class="section overflow-hidden" id="header">
+	  <section class="section overflow-hidden" id="header">
 
-      <nav class="navbar navbar-expand-md bg-dark navbar-dark" id="navbar">
+	  <nav class="navbar navbar-expand-md bg-dark navbar-dark" id="navbar">
+	  
+		<!-- Toggler/collapsibe Button -->
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+	  
+		<!-- Navbar links -->
+		<div class="collapse navbar-collapse justify-content-end" id="collapsibleNavbar" style="margin-right: 200px;">
+		  <ul class="navbar-nav">
+			<li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing#faq">F.A.Q.</a></li>
+			<li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing">Pricing</a></li>
+			<li class="nav-item"><a class="nav-link" href="https://app.facedub.app">Login</a></li>
+		  </ul>
+		</div>
+	  </nav>
 
-        <!-- Toggler/collapsibe Button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+	  <div class="container" style="padding-top: 50px;">
 
-        <!-- Navbar links -->
-        <div class="collapse navbar-collapse justify-content-end" id="collapsibleNavbar" style="margin-right: 200px;">
-          <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing#faq">F.A.Q.</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://www.facedub.app/pricing">Pricing</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://app.facedub.app">Login</a></li>
-          </ul>
-        </div>
-      </nav>
+		<div class="row">
+		  <div class="col-12 col-sm-6">
+			<h1 style="font-family: Poppins, sans-serif; color: white; font-size: 58px; font-weight: 500;">Video Face Swapping</h1>
+			<br/>
+			<h4 style="font-family: 'Montserrat', sans-serif; color: white;">Replace faces in any video/photo with our AI app</h4>
+			<br/>
+			<a class="btn btn-lg btn-round w-300 btn-success mr-16 cta" id="get_started" href="https://app.facedub.app">Get Started, Free</a>
+		  </div>
 
-      <div class="container" style="padding-top: 50px;">
-
-        <div class="row">
-          <div class="col-12 col-sm-6">
-            <h1 style="font-family: Poppins, sans-serif; color: white; font-size: 58px; font-weight: 500;">AI
-              photos for Instagram</h1>
-            <br />
-            <h4 style="font-family: 'Montserrat', sans-serif; color: white;">create <span class='text-gradient'>viral portraits</span> of any person, in
-              seconds</h4>
-            <br />
-            <a class="btn btn-lg btn-round w-300 btn-success mr-16 cta" style="text-transform: none;" id="get_started"
-              href="https://app.facedub.app">Get Started, Free</a>
-          </div>
-
-          <div class="col-sm-6" style="text-align: center;">
-            <span id="prompt" style="font-size: 20px; color: white; caret-color: white;"></span>
-            <div id="plus" style="font-size: 20px; color: white; text-align: center;">+</div>
-            <div id="carousel" class="carousel slide" style="width: 35%; margin: 0px auto;">
-              <div class="carousel-inner">
-                <div class="carousel-item active">
-					<img class="d-block w-100" src="assets/img/model_0_head.png" alt="First slide" style="width: 190px; height: 140px;">
-                </div>
-                <div class="carousel-item">
-					<img class="d-block w-100" src="assets/img/model_1_head.png" alt="Second slide" style="width: 190px; height: 140px;">
-				</div>
-                <div class="carousel-item">
-					<img class="d-block w-100" src="assets/img/model_2_head.png" alt="Third slide" style="width: 190px; height: 140px;">
-				</div>
-              </div>
-            </div>
-            <div id="equals" style="font-size: 20px; color: white; text-align: center;">=</div>
-            <img id='ai_photo' src='assets/img/model_0_gen.jpg' style='border-radius: 15px; margin-bottom: 10px;'>
-          </div>
-          <br />
-          <br />
-        </div>
-      </div>
-    </section>
-
-    <section class="section pb-0 overflow-hidden" id="solution">
-      <div class="container widget">
-        <div class="row">
-          <div class="col-sm" id="second_col" style="margin: 20px;">
-            <div class="row">
-              <h3>Upload your Own Photo, or Pick a Face to License</h3>
-              <p>Train the AI to generate photos just like you, or select from one of hundreds of available characters
-                of the gender/ethnicity/age you'd like</p>
-            </div>
-            <div class="row">
-              <h3>Describe the Photo you'd like to Create</h3>
-              <p>Just a few words are sufficient to generate a realistic image</p>
-            </div>
-            <div class="row">
-              <h3>Post to Instagram with AI copy</h3>
-              <p>Post to your Instagram feed, with suggested post text generated for you!</p>
-              <p></p>
-            </div>
-          </div>
-          <div class="col-sm order-first order-md-last">
-            <img src="assets/img/faces.png" id="blah" class="lazyload"
-              style="margin: auto; width: 100%; border-radius: 15px;">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section pb-0 overflow-hidden" id="solution">
-      <div class="container widget">
-        <div class="row">
-			<div class="col-sm">
-				<img src="assets/img/board.png" id="blah2" class="lazyload"
-					style="margin: auto; width: 100%; border-radius: 15px;">
+		  <div class="col-sm-6" style="text-align: right;">
+            <div id="image_comparison">
 			</div>
-          	<div class="col-sm" id="second_col" style="margin: 20px;">
-            <div class="row">
-              <h3>Copy the Style of any Photo</h3>
-              <p>Create unique photos, while maintaining the layout & character poses of the original.</p>
+		  </div>
+		  <br/>
+		  <br/>
+		</div>
+	  </div>
+	</section>
+
+	<section class="section pb-0 overflow-hidden" id="demo">
+		<div class="container widget">
+			<div class="row" style="margin: auto; width: 80%; text-align: center;">
+				<h4 style="margin: auto; width: 50%;">Select a face to swap with</h4>
+				<img src="assets/img/try_it_now.png" id="try" style="width: 20%; margin: auto;">
+			</div>
+			<div class="row" style="margin: auto; width: 80%; margin-bottom: 10px;">
+				<div class="demo_button">
+					<a href="javascript:switch_image('pitt')">Brad Pitt</a>
+				</div>
+				<div class="demo_button">
+					<a href="javascript:switch_image('cruise')">Tom Cruise</a>
+				</div>
+				<div class="demo_button">
+					<a href="javascript:switch_image('musk')">Elon Musk</a>
+				</div>
+			</div>
+			<div class="row">
+				<img src="assets/img/obama_original_cropped.png" id="demo_image" class="lazyload" style="margin: auto; width: 80%; border-radius: 10px;">
+			</div>
+		</div>
+	</section>
+
+	<section class="section pb-0 overflow-hidden" id="solution">
+		<div class="container widget">
+			<div class="row">
+			  <div class="col-sm" id="second_col" style="margin: 20px; margin-top: 10%;">
+				<div class="row">
+					<h3>Pick any Video</h3>
+					<p>Link to a Youtube video, search for GIFs, or upload your own.</p>
+				</div>
+				<div class="row">
+					<h3>Select a Face to Replace</h3>
+					<p>Select from one of our templates, or upload your own photo of any face.</p>
+				</div>
+				<div class="row">
+					<h3>Our AI deepfake app replaces their face in the video/photo</h3>
+					<p>Get realistic results that are indistinguishable from reality.</p>
+					<p></p>				
+				</div>
+			  </div>
+			  <div class="col-sm order-first order-md-last">
+				<div id="demo_video_buttons" class="btn-group btn-group-toggle" data-toggle="buttons">
+					<label class="btn btn-outline-primary active" id="original_video">
+					  <input type="radio" name="options" id="option1" autocomplete="off">Original Video
+					</label>
+					<label class="btn btn-outline-primary" id="modified_video">
+					  <input type="radio" name="options" id="option2" autocomplete="off">Modified Video
+					</label>
+				</div>
+				<video id='demo_video' class="lazyload" preload="none" controls playsinline autoplay muted loop alt="..." data-aos="fade-left" data-aos-delay="200">
+					<source src="assets/img/friends.mp4" type="video/mp4">
+				  Your browser does not support the video tag.
+				</video>
+			  </div>
+			</div>
+		 </div>
+	</section>
+
+	<section class="section pb-0 overflow-hidden" id="stats">
+        <div class="container">
+
+          <div class="row" id="stats_numbers">
+            <div class="col-sm">
+              <h4 style="color: #2478FF" id="videos_created"></h4>
+              <br>
+              <h5>videos created</h5>
             </div>
-            <div class="row">
-              <h3>Get Inspiration from a Library of Viral Photos</h3>
-              <p>Select from one of our templates, or upload your own photo of any face.</p>
+
+            <div class="col-sm">
+              <h4 style="color: #2478FF" id="photos_created"></h4><br>
+              <h5>photos created</h5>
             </div>
-            <div class="row">
-              <h3>Search by Brand, hashtag, or theme</h3>
-              <p>Get realistic results that are indistinguishable from reality.</p>
-              <p></p>
+
+            <div class="col-sm">
+              <h4 style="color: #2478FF" id="video_views"></h4><br>
+              <h5>video views</h5>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <section class="section pb-0 overflow-hidden" id="stats">
-      <div class="container">
-        <div class="row" id="stats_numbers">
-          <div class="col-sm">
-            <h4 style="color: #2478FF" id="videos_created"></h4>
-            <br>
-            <h5>custom AI avatars created</h5>
           </div>
 
-          <div class="col-sm">
-            <h4 style="color: #2478FF" id="photos_created"></h4><br>
-            <h5>photos created</h5>
-          </div>
+          <br><br>
 
-          <div class="col-sm">
-            <h4 style="color: #2478FF" id="video_views"></h4><br>
-            <h5>Instagram views</h5>
-          </div>
-        </div>
-        <br><br>
-    </section>
-  </main>
+      </section>
+				
 
-  <footer class="site-footer py-90"
-    style="background-image:url('assets/img/low_poly_background_small.jpg'); color: white;">
-    <div class="container">
-      <div class="row">
-        <div class="col-4">
-          <h6 class="heading-alt text-uppercase fs-14 mb-3">Product</h6>
-          <div class="nav flex-column">
-            <a class="nav-link" href="https://www.facedub.app/pricing">Pricing</a>
-            <a class="nav-link" href="https://www.facedub.app/pricing#faq">F.A.Q.</a>
-          </div>
-        </div>
+	  <!--<section class="section pb-0 overflow-hidden">
 
-        <div class="col-4">
-          <h6 class="heading-alt text-uppercase fs-14 mb-3">Resources</h6>
-          <div class="nav flex-column">
-            <a class="nav-link" href="https://www.tiktok.com/@facedub.app?lang=en">TikTok</a>
-            <a class="nav-link" href="https://www.instagram.com/facedub.app">Instagram</a>
-            <a class="nav-link" href="https://www.youtube.com/channel/UCVwLXJSebaLXzfKYQ_1SeqQ">YouTube</a>
-            <a class="nav-link" href="https://twitter.com/facedub">Twitter</a>
-            <a class="nav-link" href="https://blog.facedub.app">Blog</a>
-          </div>
-        </div>
+				- Redo your favorite movies with the actor of your choice<br/>
+				- Digital gifts
+				- Replace a stunt double's footage with the actor's face<br/>
+				- Bring to life deceased actors<br/>
 
-        <div class="col-4">
-          <h6 class="heading-alt text-uppercase fs-14 mb-3">Company</h6>
-          <div class="nav flex-column">
-            <a class="nav-link" href="mailto:admin@facedub.app">Contact Us</a>
-            <a class="nav-link" href="mailto:careers@facedub.app">Careers</a>
-            <a class="nav-link" href="https://www.facedub.app/privacy">Privacy</a>
-          </div>
-        </div>
 
-      </div>
-      <div class="row"></div>
-    </div>
-  </footer>
-</body>
+		<div class="container widget">
+		  <div class="row">
+			<div class="col-sm">
+              <div class="row" style="text-align: center;"><h1>Use in Stores or Online</h1></div>
+			  <img src='https://miro.medium.com/max/700/1*rMsEBmcWZbtsKNijW8WclA.jpeg' style="border-radius: 10px;">
+			</div>
+			<div class="col-sm" style="margin: 20px; margin-top: 10%;">
+			  <div class="row">
+				<h3>Apple Pay & Google Pay</h3>
+				<p>Employees can add their cards to their smartphones to pay at millions of point-of-sale locations worldwide.</p>
+			  </div>
+			  <div class="row">
+				<h3>Spend Online</h3>
+				<p>The cards are accepted at any online merchant that accepts Visa/Mastercard.</p>
+			  </div>
+			  <div class="row">
+				<h3>Secure by Default</h3>
+				<p>We monitor transactions for any suspicious activity, so you don't have to worry about stolen cards.</p>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </section>
 
+	  <section class="section pb-0 overflow-hidden" id="solution">
+		<div class="container widget">
+			<div class="row">
+			  <div class="col-sm" id="second_col" style="margin: 20px; margin-top: 10%;">
+				<div class="row">
+				  	<h3>Apply in Seconds</h3>
+				  	<p>Just link your bank account & accounting software, and you'll apply for a 30-day line of credit.<sup>*</sup></p>
+				</div>
+				<div class="row">
+				  	<h3>Grows with your Business</h3>
+				  	<p>As your revenue grows, so does your credit line - automatically.  You don't need to re-apply!</p>
+				</div>
+				<div class="row">
+					<h3>No Personal Guarantee/Credit Checks</h3>
+					<p>We don't ask for any personal guarantees or run credit checks on the business's owners; we purely rely on your business's financial performance.</p>
+				</div>
+			  </div>
+			  <div class="col-sm order-first order-md-last">
+				<div class="row" style="text-align: center;"><h1>Grow with Credit Cards</h1></div>
+				<img src='assets/img/credit_card.png' style='width: 80%; margin-top: 35px;'>
+			  </div>
+			</div>
+		 </div>
+		</section>
+
+		<section class="section pb-0 overflow-hidden" id="integrations">
+			<div class="container widget">
+				<div class="row align-items-center" style="padding: 5px;">
+				<h1 style="text-align: center; width: 100%">Built-In Integrations to Automate your Workflow</h1>
+				</div>
+				<div class="widget_text row align-items-center" style="padding: 5px;">
+					<p>We get it - change is hard.  Our integrations allow you to get started quickly, and deliver value in minutes, not weeks.</p>
+				</div>
+				<div class="row align-items-center widget_image" style="padding: 15px;">
+				<img data-src="assets/img/accounting_integrations.png" class='lazyload'>
+				</div>
+			</div>
+		</section>-->
+
+	</main>
+
+	<footer class="site-footer py-90" style="background-image:url('assets/img/low_poly_background_small.jpg'); color: white;">
+	  <div class="container">
+		<div class="row">
+		  <div class="col-4">
+			<h6 class="heading-alt text-uppercase fs-14 mb-3">Product</h6>
+			<div class="nav flex-column">
+			  <a class="nav-link" href="https://www.facedub.app/pricing">Pricing</a>
+			  <a class="nav-link" href="https://www.facedub.app/pricing#faq">F.A.Q.</a>
+			</div>
+		  </div>
+
+		  <div class="col-4">
+			<h6 class="heading-alt text-uppercase fs-14 mb-3">Resources</h6>
+			<div class="nav flex-column">
+			  <a class="nav-link" href="https://www.tiktok.com/@facedub.app?lang=en">TikTok</a>
+			  <a class="nav-link" href="https://www.instagram.com/facedub.app">Instagram</a>
+			  <a class="nav-link" href="https://www.youtube.com/channel/UCVwLXJSebaLXzfKYQ_1SeqQ">YouTube</a>
+			  <a class="nav-link" href="https://twitter.com/facedub">Twitter</a>
+			  <a class="nav-link" href="https://blog.facedub.app">Blog</a>
+			</div>
+		  </div>
+
+		  <div class="col-4">
+			<h6 class="heading-alt text-uppercase fs-14 mb-3">Company</h6>
+			<div class="nav flex-column">
+			  <a class="nav-link" href="mailto:admin@facedub.app">Contact Us</a>
+			  <a class="nav-link" href="mailto:careers@facedub.app">Careers</a>
+			  <a class="nav-link" href="https://www.facedub.app/privacy">Privacy</a>
+			</div>
+		  </div>
+
+		</div>
+		<div class="row"></div>
+	  </div>
+	</footer>
+  </body>
 </html>
